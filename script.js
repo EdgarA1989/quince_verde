@@ -309,8 +309,8 @@ function initLightbox() {
 function initMusica() {
   const btn   = document.getElementById('musica-btn');
   const audio = document.getElementById('audio');
-  const play  = btn?.querySelector('.icon-play');
-  const pause = btn?.querySelector('.icon-pause');
+  const play = btn?.querySelector('.icon-play');
+  const stop = btn?.querySelector('.icon-stop');
   if (!btn || !audio) return;
 
   let playing = false;
@@ -318,16 +318,19 @@ function initMusica() {
   btn.addEventListener('click', () => {
     if (playing) {
       audio.pause();
+      audio.currentTime = 0;
       playing = false;
-      play.style.display  = '';
-      pause.style.display = 'none';
+      play.style.display = '';
+      stop.style.display = 'none';
       btn.classList.remove('playing');
+      btn.setAttribute('aria-label', 'Reproducir');
     } else {
       audio.play().then(() => {
         playing = true;
-        play.style.display  = 'none';
-        pause.style.display = '';
+        play.style.display = 'none';
+        stop.style.display = '';
         btn.classList.add('playing');
+        btn.setAttribute('aria-label', 'Detener');
       }).catch(() => {});
     }
   });
