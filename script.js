@@ -346,11 +346,27 @@ function initCalendar(c) {
 
   const gcal = document.getElementById('btn-gcal');
   if (gcal) {
-    gcal.href = `https://calendar.google.com/calendar/render?action=TEMPLATE`
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE`
       + `&text=${encodeURIComponent(titulo)}`
       + `&dates=${fmt(fecha)}/${fmt(fin)}`
       + `&details=${encodeURIComponent(detalle)}`
       + `&location=${encodeURIComponent(lugar)}`;
+    gcal.href = url;
+    gcal.addEventListener('click', e => {
+      const ua = navigator.userAgent;
+      if (/Android/i.test(ua)) {
+        e.preventDefault();
+        window.location.href = 'intent://calendar.google.com/calendar/render?action=TEMPLATE'
+          + `&text=${encodeURIComponent(titulo)}`
+          + `&dates=${fmt(fecha)}/${fmt(fin)}`
+          + `&details=${encodeURIComponent(detalle)}`
+          + `&location=${encodeURIComponent(lugar)}`
+          + '#Intent;scheme=https;package=com.google.android.calendar;end';
+      } else if (/iPhone|iPad|iPod/i.test(ua)) {
+        e.preventDefault();
+        window.location.href = url;
+      }
+    });
   }
 
   const btnIcs = document.getElementById('btn-ics');
