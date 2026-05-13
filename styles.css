@@ -823,6 +823,7 @@ body {
 }
 
 .btn-agendar:hover { background: var(--accent-mint); }
+.btn-agendar--solo { width: 100%; justify-content: center; }
 
 /* ══════════════════════════════════════════════════════
    CALENDARIO
