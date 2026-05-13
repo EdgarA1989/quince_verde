@@ -385,8 +385,14 @@ function initCalendar(c) {
       ].join('\r\n');
 
       const blob = new Blob([ics], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        window.location.href = url;
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        return;
+      }
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
+      a.href = url;
       a.download = `15-${c.nombre.toLowerCase()}.ics`;
       a.click();
     });
