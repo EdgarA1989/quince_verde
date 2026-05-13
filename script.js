@@ -344,57 +344,25 @@ function initCalendar(c) {
   const detalle = `${c.frase} ${c.fechaDisplay}`;
   const lugar   = c.lugar.direccion;
 
-  const gcal = document.getElementById('btn-gcal');
-  if (gcal) {
-    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE`
-      + `&text=${encodeURIComponent(titulo)}`
-      + `&dates=${fmt(fecha)}/${fmt(fin)}`
-      + `&details=${encodeURIComponent(detalle)}`
-      + `&location=${encodeURIComponent(lugar)}`;
-    gcal.href = url;
-    gcal.addEventListener('click', e => {
-      const ua = navigator.userAgent;
-      if (/Android/i.test(ua)) {
-        e.preventDefault();
+  const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE`
+    + `&text=${encodeURIComponent(titulo)}`
+    + `&dates=${fmt(fecha)}/${fmt(fin)}`
+    + `&details=${encodeURIComponent(detalle)}`
+    + `&location=${encodeURIComponent(lugar)}`;
+
+  const btnIcs = document.getElementById('btn-ics');
+  if (btnIcs) {
+    btnIcs.addEventListener('click', () => {
+      if (/Android/i.test(navigator.userAgent)) {
         window.location.href = 'intent://calendar.google.com/calendar/render?action=TEMPLATE'
           + `&text=${encodeURIComponent(titulo)}`
           + `&dates=${fmt(fecha)}/${fmt(fin)}`
           + `&details=${encodeURIComponent(detalle)}`
           + `&location=${encodeURIComponent(lugar)}`
           + '#Intent;scheme=https;package=com.google.android.calendar;end';
-      } else if (/iPhone|iPad|iPod/i.test(ua)) {
-        e.preventDefault();
-        window.location.href = url;
+      } else {
+        window.open(calUrl, '_blank');
       }
-    });
-  }
-
-  const btnIcs = document.getElementById('btn-ics');
-  if (btnIcs) {
-    btnIcs.addEventListener('click', () => {
-      const ics = [
-        'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Programate//15anios//ES',
-        'BEGIN:VEVENT',
-        `DTSTART:${fmt(fecha)}`,
-        `DTEND:${fmt(fin)}`,
-        `SUMMARY:${titulo}`,
-        `DESCRIPTION:${detalle}`,
-        `LOCATION:${lugar}`,
-        'STATUS:CONFIRMED',
-        'END:VEVENT', 'END:VCALENDAR'
-      ].join('\r\n');
-
-      const blob = new Blob([ics], { type: 'text/calendar' });
-      const url = URL.createObjectURL(blob);
-      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        window.location.href = url;
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-        return;
-      }
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `15-${c.nombre.toLowerCase()}.ics`;
-      a.click();
     });
   }
 }
