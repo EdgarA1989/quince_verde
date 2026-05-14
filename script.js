@@ -353,15 +353,46 @@ function initCalendar(c) {
   const btnIcs = document.getElementById('btn-ics');
   if (btnIcs) {
     btnIcs.addEventListener('click', () => {
-      if (/Android/i.test(navigator.userAgent)) {
+      const ics = [
+        'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Programate//15anios//ES',
+        'BEGIN:VEVENT',
+        `DTSTART:${fmt(fecha)}`,
+        `DTEND:${fmt(fin)}`,
+        `SUMMARY:${titulo}`,
+        `DESCRIPTION:${detalle}`,
+        `LOCATION:${lugar}`,
+        'STATUS:CONFIRMED',
+        'END:VEVENT', 'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob   = new Blob([ics], { type: 'text/calendar' });
+      const icsUrl = URL.createObjectURL(blob);
+      const ua     = navigator.userAgent;
+
+      if (/Android/i.test(ua)) {
         window.location.href = 'intent://calendar.google.com/calendar/render?action=TEMPLATE'
           + `&text=${encodeURIComponent(titulo)}`
           + `&dates=${fmt(fecha)}/${fmt(fin)}`
           + `&details=${encodeURIComponent(detalle)}`
           + `&location=${encodeURIComponent(lugar)}`
           + '#Intent;scheme=https;package=com.google.android.calendar;end';
+        setTimeout(() => {
+          const a = document.createElement('a');
+          a.href = icsUrl;
+          a.download = `15-${c.nombre.toLowerCase()}.ics`;
+          a.click();
+          URL.revokeObjectURL(icsUrl);
+        }, 800);
+      } else if (/iPhone|iPad|iPod/i.test(ua)) {
+        window.location.href = icsUrl;
+        setTimeout(() => URL.revokeObjectURL(icsUrl), 5000);
       } else {
         window.open(calUrl, '_blank');
+        const a = document.createElement('a');
+        a.href = icsUrl;
+        a.download = `15-${c.nombre.toLowerCase()}.ics`;
+        a.click();
+        URL.revokeObjectURL(icsUrl);
       }
     });
   }
